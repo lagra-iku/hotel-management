@@ -1,0 +1,8 @@
+Django
+psycopg2-binary  # PostgreSQL adapter
+djangorestframework # API support
+djangorestframework-simplejwt  # JWT authentication
+whitenoise  # Serving static files in production
+gunicorn  # WSGI server for production
+django-cors-headers # Handling CORS for frontend/backend communication
+python-dotenv  # Environment variable management

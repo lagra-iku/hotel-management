@@ -21,7 +21,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./
-          server-dir: /app/ # Change this to your cPanel directory
+          server-dir: /home/aquamana/app/ # Change this to your cPanel directory
           exclude: |
             **/.git*
             **/.github*

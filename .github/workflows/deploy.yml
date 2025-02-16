@@ -1,0 +1,32 @@
+name: Deploy to cPanel via FTP
+
+on:
+  push:
+    branches:
+      - production  # Runs only when pushing to the 'production' branch
+
+jobs:
+  deploy:
+    name: Deploy to cPanel
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚀 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 📂 Deploy Files via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./
+          server-dir: /home/aquamana/domains/hotelhub.app/  # Change this to your cPanel directory
+          exclude: |
+            **/.git*
+            **/.github*
+            **/node_modules/*
+            **/__pycache__/*
+            **/env/*
+            **/.venv/*
+            **/*.sqlite3

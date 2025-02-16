@@ -50,7 +50,7 @@ On macOS/Linux: <br />
     source env/bin/activate
 5. Install dependencies
 Install the required packages using pip: <br />
-    pip install -r requirements.txt
+    pip install -r backend/requirements.txt
 
 
 ## Database Setup
@@ -62,6 +62,7 @@ Create a .env file in the root of your project directory. The file should look l
     SECRET_KEY=your-secret-key-here
 2. Run database migrations
 After setting up the environment and project, run the migrations to create the SQLite database: <br />
+    cd backend <br />
     python manage.py migrate
 3. Create a superuser (optional)
 If you want to access the Django admin interface, create a superuser: <br />
@@ -91,5 +92,5 @@ To contribute to this project, follow these steps:
 6. Create a Pull Request on GitHub.
 
 ## Contributors
-https://github.com/lagra-iku
+https://github.com/lagra-iku <br />
 https://github.com/Olisajioke

@@ -14,7 +14,8 @@ if not SECRET_KEY:
     raise Exception("SECRET_KEY environment variable not set!")
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
-ALLOWED_HOSTS = []
+DEBUG = os.getenv("DEBUG", "False") == "True"
+ALLOWED_HOSTS = ["hotelhub.aquamanager.com.ng", "www.hotelhub.aquamanager.com.ng", "localhost"]
 
 # Installed apps
 INSTALLED_APPS = [
@@ -88,12 +89,15 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 LANGUAGE_CODE = 'en-uk'
-TIME_ZONE = 'UTC + 1'
+TIME_ZONE = 'Africa/Lagos'
 USE_I18N = True
 USE_TZ = True
 
-# Static files
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

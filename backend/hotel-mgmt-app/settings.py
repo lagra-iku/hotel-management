@@ -6,12 +6,18 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Security settings
+load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
 if not SECRET_KEY:
     raise Exception("SECRET_KEY environment variable not set!")
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
-ALLOWED_HOSTS = []
+if DEBUG:
+    print("Running in DEBUG mode!")
+else:
+    print("Running in PRODUCTION mode!")
+
+ALLOWED_HOSTS = ['*']
 
 # Installed apps
 INSTALLED_APPS = [
@@ -27,6 +33,7 @@ INSTALLED_APPS = [
     'reports',
     'bar_mgmt',
     'expense_mgmt',
+    'corsheaders',
 ]
 
 # Middleware
@@ -38,8 +45,20 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
+
+
+# Allow all origins during development
+CORS_ALLOW_ALL_ORIGINS = True
+
+# Authentication
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ]
+}
 # Root URL configuration
 ROOT_URLCONF = 'hotel-mgmt-app.urls'
 
@@ -85,8 +104,23 @@ TIME_ZONE = 'UTC + 1'
 USE_I18N = True
 USE_TZ = True
 
+
+AUTH_USER_MODEL = 'registration.CustomUser'
 # Static files
 STATIC_URL = '/static/'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Or 'console.EmailBackend' for development
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'altairraphael19@gmail.com'
+EMAIL_HOST_PASSWORD = 'rmxjyerckzjuyrot'
+DEFAULT_FROM_EMAIL = 'Hotel Management <altairraphael19@gmail.com>'
+
+# Frontend URL for password reset
+FRONTEND_BASE_URL = 'http://localhost:3000'  # Your React app URL

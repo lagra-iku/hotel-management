@@ -11,13 +11,14 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 if not SECRET_KEY:
     raise Exception("SECRET_KEY environment variable not set!")
 
-DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = os.getenv("DEBUG", "False") == "False"
 if DEBUG:
     print("Running in DEBUG mode!")
 else:
     print("Running in PRODUCTION mode!")
 
 ALLOWED_HOSTS = ['*']
+AUTH_USER_MODEL = 'registration.CustomUser'
 
 # Installed apps
 INSTALLED_APPS = [
@@ -100,12 +101,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 LANGUAGE_CODE = 'en-uk'
-TIME_ZONE = 'UTC + 1'
+#TIME_ZONE = 'UTC + 1'
+TIME_ZONE = 'Africa/Lagos'
 USE_I18N = True
 USE_TZ = True
 
 
-AUTH_USER_MODEL = 'registration.CustomUser'
+
 # Static files
 STATIC_URL = '/static/'
 

@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-
+from django.conf import settings
 # Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -116,13 +116,19 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # Email settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Or 'console.EmailBackend' for development
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'altairraphael19@gmail.com'
-EMAIL_HOST_PASSWORD = 'rmxjyerckzjuyrot'
-DEFAULT_FROM_EMAIL = 'Hotel Management <altairraphael19@gmail.com>'
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Or 'console.EmailBackend' for development
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+#EMAIL_HOST = 'smtp.gmail.com'
+#EMAIL_PORT = 587
+#EMAIL_USE_TLS = True
+#EMAIL_HOST_USER = 'altairraphael19@gmail.com'
+#EMAIL_HOST_PASSWORD = 'rmxjyerckzjuyrot'
+#DEFAULT_FROM_EMAIL = 'Hotel Management <altairraphael19@gmail.com>'
+DEFAULT_FROM_EMAIL = 'noreply@<altairraphael19@gmail.com>'
 
 # Frontend URL for password reset
-FRONTEND_BASE_URL = 'http://localhost:3000'  # Your React app URL
+FRONTEND_BASE_URL = 'http://localhost:3000'  #React app URL
+
+# Generate shorter-lived tokens (1 hour instead of default 3 days)
+
+settings.PASSWORD_RESET_TIMEOUT = 3600  # Seconds

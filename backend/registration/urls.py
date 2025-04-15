@@ -23,7 +23,6 @@ urlpatterns = [
         SetNewPasswordAPIView.as_view(), 
         name='set_new_password'),
     
-    # Include other URLs your app might need...
 ]
 
 

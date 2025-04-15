@@ -3,6 +3,14 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import CustomUser
 from django.utils.translation import gettext_lazy as _
 
+
+
+
+
+admin.site.site_header = "Hotel Management Software Admin"
+admin.site.site_title = "Hotel Management Software Admin Portal"
+admin.site.index_title = "Welcome to Hotel Management Software Administration Panel"
+
 @admin.register(CustomUser)
 class CustomUserAdmin(BaseUserAdmin):
     ordering = ['email']

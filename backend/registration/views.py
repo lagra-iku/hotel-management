@@ -12,6 +12,9 @@ from .serializers import CustomUserRegistrationSerializer, SetNewPasswordSeriali
 from .models import CustomUser, Hotel
 from .serializers import HotelSerializer
 from django.shortcuts import render, redirect, get_object_or_404
+from rest_framework import generics, status
+from rest_framework.response import Response
+
 
 def index(request):
     return HttpResponse("Hello from the registration app!")
@@ -40,12 +43,15 @@ class RegisterAPIView(generics.GenericAPIView):
             token = default_token_generator.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             
-            reset_url = f"{settings.FRONTEND_BASE_URL}/set-password/{uid}/{token}/"
+            #reset_url = f"{settings.FRONTEND_BASE_URL}/auth/set-new-password/{uid}/{token}/"
+            reset_url = f"{settings.FRONTEND_BASE_URL}/api/auth/password-reset-confirm/{uid}/{token}/"
             
+
+            print(f"Generated UID: {uid}, Token: {token}")  # In registration
             # Send email
             send_mail(
                 'Set your password for your new account',
-                f'Please go to the following link to set your password: {reset_url}',
+                f'Please use the following link to reset your password: {reset_url}',
                 settings.DEFAULT_FROM_EMAIL,
                 [user.email],
                 fail_silently=False,
@@ -74,6 +80,7 @@ class PasswordResetConfirmAPIView(generics.GenericAPIView):
         """
         Validate the password reset token and uid. # Grace this is called when the user clicks the link in the email.
         """        
+        print(f"Received UID: {uidb64}, Token: {token}")  # In password reset confirm
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
             user = CustomUser.objects.get(pk=uid)
@@ -89,11 +96,45 @@ class PasswordResetConfirmAPIView(generics.GenericAPIView):
             {'detail': 'Password reset link is invalid.'},
             status=status.HTTP_400_BAD_REQUEST
         )
+    
+
+
+
 
 class SetNewPasswordAPIView(generics.GenericAPIView):
     """
-    API view to set new password after token validation
+    API view to set a new password for the user after validating the token.
     """
+    permission_classes = [AllowAny]
+    serializer_class = SetNewPasswordSerializer
+
+    def put(self, request):  # Changed from post() to put()
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                uid = force_str(urlsafe_base64_decode(serializer.validated_data['uid']))
+                user = CustomUser.objects.get(pk=uid)
+            except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
+                return Response(
+                    {'detail': 'Invalid user.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            if default_token_generator.check_token(user, serializer.validated_data['token']):
+                user.set_password(serializer.validated_data['password'])
+                user.is_active = True
+                user.save()
+                return Response(
+                    {'detail': 'Password has been reset successfully.'},
+                    status=status.HTTP_200_OK
+                )
+            return Response(
+                {'detail': 'Invalid token.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+"""
+class SetNewPasswordAPIView(generics.GenericAPIView):
     permission_classes = [AllowAny]
     serializer_class = SetNewPasswordSerializer
 
@@ -122,3 +163,5 @@ class SetNewPasswordAPIView(generics.GenericAPIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+"""
+

@@ -11,7 +11,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 if not SECRET_KEY:
     raise Exception("SECRET_KEY environment variable not set!")
 
-DEBUG = os.getenv("DEBUG", "False") == "False"
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 if DEBUG:
     print("Running in DEBUG mode!")
 else:
@@ -30,17 +30,18 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',  # Django REST Framework
     'room_booking',
+    'corsheaders',
     'registration',
     'reports',
     'bar_mgmt',
     'expense_mgmt',
-    'corsheaders',
 ]
 
 # Middleware
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -49,7 +50,9 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
-
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
 
 # Allow all origins during development
 CORS_ALLOW_ALL_ORIGINS = True

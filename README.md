@@ -90,6 +90,23 @@ To contribute to this project, follow these steps:
  <b>git push origin feature-branch</b>
 6. Create a Pull Request on GitHub.
 
+
+
+
+
+## API RESTPOINT FOR REGISTER
+http://localhost:8000/api/auth/register/
+Paste the restpoint on postman or other API testers or use it directly on the React App to create new users. 
+
+## API RESTPOINT FOR PASSWORD RESET
+http://localhost:8000/api/auth/password-reset-confirm/MTQ/cs2824-ae93c8cc7ee1ca42e318badb56e097a0/
+Paste the restpoint on postman or other API testers or use it directly on the React App to create new users. it is used to reset the password. The user needs this to change their password after the email message.
+
+## API RESTPOINT FOR PASSWORD CREATION
+http://localhost:8000/api/auth/set-new-password/
+
 ## Contributors
 https://github.com/lagra-iku
 https://github.com/Olisajioke
+
+

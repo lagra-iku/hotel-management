@@ -54,7 +54,7 @@ Install the required packages using pip: <br />
 
 
 ## Database Setup
-This project uses SQLite as the default database.
+This project uses SQLite as the default database for development and PostGreSQL for production.
 
 1. Create a .env file
 Create a .env file in the root of your project directory. The file should look like this: <br />
@@ -77,6 +77,28 @@ Run the following command to start the Django development server:
         http://127.0.0.1:8000/ <br />
     If you created a superuser, you can log in to the admin panel at: <br />
         http://127.0.0.1:8000/admin/
+
+## Running your React frontend** alongside your Django backend:
+1. Open a new terminal window/tab
+Make sure your backend server (Django) continues to run on `localhost:8000` in its own terminal.
+2. Navigate to your React frontend directory
+cd path/to/my_hotel_management_app/frontend
+(Adjust the path if you're not already in the project directory.)
+3. Install dependencies (only once)
+npm install
+This reads your `package.json` and installs all required libraries into `node_modules/`.
+4. Start the React development server
+npm run dev
+This will:
+* Compile the React app.
+* Open it in your browser at `http://localhost:3000`.
+
+You’ll now have:
+* Django backend running on `http://localhost:8000`
+* React frontend on `http://localhost:3000`
+
+## Stop the apps from running on your terminal
+* Use Ctrl + C
 
 ## Contributing
 To contribute to this project, follow these steps:

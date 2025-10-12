@@ -1,3 +1,7 @@
+## ADMIN INTERFACE
+ADMIN ACCESS
+email: adminsgraceandbright@gmail.com
+password: adminsgraceandbright@@7
 
 ## API RESTPOINT FOR REGISTER
 http://localhost:8000/api/auth/register/
@@ -47,3 +51,30 @@ KEY: Content-type
 VALUE: application/json
 DESCRIPTION: Header for hotel management App
 
+
+
+## DELETE HOTEL
+API = http://localhost:8000/api/auth/hotel/delete/
+# HEADER: 
+Authorization: Bearer <your_access_token>
+Content-Type: application/json
+
+
+## JWT LOGIN
+API = POST http://localhost:8000/api/auth/login/
+Body (JSON):
+{
+    "email": "DoctorSTRange@gmail.com",
+    "password": "userpassword123"
+}
+
+## EDIT HOTEL - USER
+API = http://localhost:8000/api/auth/hotel/update/
+body (JSON)
+{
+  any part of the hotel reg form or the user details you want to edit
+}
+
+HEADER: 
+Content-type - application/json
+Authorization - Bearer <session token>

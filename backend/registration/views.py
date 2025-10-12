@@ -14,7 +14,7 @@ from .serializers import HotelSerializer
 from django.shortcuts import render, redirect, get_object_or_404
 from rest_framework import generics, status
 from rest_framework.response import Response
-
+from rest_framework.permissions import IsAuthenticated
 
 def index(request):
     return HttpResponse("Hello from the registration app!")
@@ -89,7 +89,7 @@ class PasswordResetConfirmAPIView(generics.GenericAPIView):
 
         if user is not None and default_token_generator.check_token(user, token):
             return Response(
-                {'detail': 'Password reset link is valid. Proceed to set new password.'},
+                {'detail': f'Password reset link is valid. Proceed to set new password. Received UID: {uidb64}, Token: {token}'},
                 status=status.HTTP_200_OK
             )
         return Response(
@@ -97,8 +97,6 @@ class PasswordResetConfirmAPIView(generics.GenericAPIView):
             status=status.HTTP_400_BAD_REQUEST
         )
     
-
-
 
 
 class SetNewPasswordAPIView(generics.GenericAPIView):
@@ -133,6 +131,54 @@ class SetNewPasswordAPIView(generics.GenericAPIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+class HotelUpdateAPIView(generics.UpdateAPIView):
+    """
+    Update the logged-in user's hotel profile.
+    """
+    serializer_class = HotelSerializer
+    permission_classes = [IsAuthenticated]
+    # permission_classes = [AllowAny]
+
+    def get_object(self):
+        # Returns the hotel profile for the logged-in user
+        return self.request.user.hotel_profile  # OneToOneField ensures single hotel
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
+
+
+
+class HotelDeleteAPIView(generics.DestroyAPIView):
+    """
+    Delete the logged-in user's hotel profile.
+    """
+    permission_classes = [IsAuthenticated]  # Ensure only logged-in users can delete
+    serializer_class = HotelSerializer
+
+    def get_object(self):
+        # Returns the hotel associated with the logged-in user
+        return self.request.user.hotel_profile
+
+    def delete(self, request, *args, **kwargs):
+        hotel = self.get_object()
+        hotel.delete()
+        return Response(
+            {"detail": "Your hotel profile has been deleted successfully."},
+            status=status.HTTP_200_OK
+        )
+
+
+
 """
 class SetNewPasswordAPIView(generics.GenericAPIView):
     permission_classes = [AllowAny]

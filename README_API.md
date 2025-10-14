@@ -78,3 +78,25 @@ body (JSON)
 HEADER: 
 Content-type - application/json
 Authorization - Bearer <session token>
+
+
+## RESET PASSWORD FOR UNATHENTICATED USER
+API = http://localhost:8000/api/auth/request-password-reset-unauthenticated-user/
+body (JSON) 
+{
+  "email": "useremail@gmail.com"
+}
+HEADER:
+ontent-type - application/json
+
+## RESET PASSWORD FOR AUTHENITICATED USER
+API: http://localhost:8000/api/auth/request-password-change-authenticated-user/
+body (JSON)
+{
+  "email": "USEREMAIL@gmail.com",
+  "old_password":
+    "USerOldPassword",
+}
+HEADER: 
+Content-type - application/json
+Authorization - Bearer <session token>

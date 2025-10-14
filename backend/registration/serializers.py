@@ -3,6 +3,7 @@ from rest_framework import serializers
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from .models import CustomUser, Hotel
+from django.contrib.auth import get_user_model
 
 class CustomUserRegistrationSerializer(serializers.ModelSerializer):
     """Serializer for user registration, including hotel-specific fields."""
@@ -55,7 +56,6 @@ class HotelSerializer(serializers.ModelSerializer):
 
 
 
-
 class SetNewPasswordSerializer(serializers.Serializer):
     """
     Serializer for setting new password
@@ -73,3 +73,36 @@ class SetNewPasswordSerializer(serializers.Serializer):
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError({"password": "Password fields didn't match."})
         return attrs
+
+
+
+
+
+class AuthenticatedUserResetPasswordSerializer(serializers.Serializer):
+    """
+    Serializer for changing password for authenticated users.
+    """
+    old_password = serializers.CharField(write_only=True, required=True)
+
+    def validate_old_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError("Old password is incorrect.")
+        return value
+
+
+User = get_user_model()
+class UnauthenticatedUserResetPasswordSerializer(serializers.Serializer):
+    """
+    Serializer for requesting a password reset for unauthenticated users.
+    """
+    email = serializers.EmailField()
+
+    def validate_email(self, value):
+        try:
+            user = User.objects.get(email=value)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("User with this email does not exist.")
+        self.user = user  # store user for later use in the view
+        return value
+

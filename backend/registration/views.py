@@ -8,7 +8,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from .serializers import CustomUserRegistrationSerializer, SetNewPasswordSerializer
+from .serializers import CustomUserRegistrationSerializer, SetNewPasswordSerializer, AuthenticatedUserResetPasswordSerializer, UnauthenticatedUserResetPasswordSerializer 
 from .models import CustomUser, Hotel
 from .serializers import HotelSerializer
 from django.shortcuts import render, redirect, get_object_or_404
@@ -103,7 +103,7 @@ class SetNewPasswordAPIView(generics.GenericAPIView):
     """
     API view to set a new password for the user after validating the token.
     """
-    permission_classes = [AllowAny]
+    permission_classes = [AllowAny]  
     serializer_class = SetNewPasswordSerializer
 
     def put(self, request):  # Changed from post() to put()
@@ -131,8 +131,6 @@ class SetNewPasswordAPIView(generics.GenericAPIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 
 
@@ -176,6 +174,71 @@ class HotelDeleteAPIView(generics.DestroyAPIView):
             {"detail": "Your hotel profile has been deleted successfully."},
             status=status.HTTP_200_OK
         )
+
+
+
+class AuthenticatedUserRequestPasswordChange(generics.GenericAPIView):
+    """
+    API View to request password change for authenticated users.
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = AuthenticatedUserResetPasswordSerializer
+
+    def post(self, request):
+        """Handles request to change password"""
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = request.user  # since it's an authenticated user
+
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        reset_url = f"{settings.FRONTEND_BASE_URL}/api/auth/password-reset-confirm/{uid}/{token}/"
+
+        send_mail(
+            'Set your new password',
+            f'You have requested a password reset. Use the following link to reset your password: {reset_url}. Kindly ignore this email if you did not make this request.',
+            settings.DEFAULT_FROM_EMAIL,
+            [user.email],
+            fail_silently=False,
+        )
+
+        return Response(
+            {'detail': 'Please check your email to set your password.'},
+            status=status.HTTP_200_OK
+        )
+
+
+
+
+
+
+
+class RequestPasswordResetUnauthenticatedUser(generics.GenericAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = UnauthenticatedUserResetPasswordSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = serializer.user
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        reset_url = f"{settings.FRONTEND_BASE_URL}/api/auth/password-reset-confirm/{uid}/{token}/"
+
+        send_mail(
+            'Set your new password',
+            f'You have requested a password reset. Use the following link to reset your password: {reset_url}. Kindly ignore this email if you did not make this request.',
+            settings.DEFAULT_FROM_EMAIL,
+            [user.email],
+            fail_silently=False,
+        )
+        return Response(
+            {'detail': 'Please check your email to reset your password.'},
+            status=status.HTTP_200_OK
+        )
+    
 
 
 

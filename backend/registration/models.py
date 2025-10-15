@@ -85,5 +85,106 @@ class Hotel(models.Model):
 
     logo = models.ImageField(upload_to=user_directory_path, blank=True, null=True)
 
+
+    # SUBSCRIPTION HELPERS
+    # =====================
+
+    def get_active_subscription(self):
+        """
+        Returns the hotel's current active subscription, or None if none exists.
+        """
+        active_sub = self.subscriptions.filter(is_active=True, end_date__gte=now()).order_by('-start_date').first()
+        return active_sub
+
+    def current_plan(self):
+        """
+        Returns the SubscriptionPlan instance of the hotel's active plan.
+        If no active subscription, returns None.
+        """
+        sub = self.get_active_subscription()
+        return sub.plan if sub else None
+
+    def has_feature(self, feature_name: str) -> bool:
+        """
+        Checks if the hotel's active plan has a given feature.
+        Example: hotel.has_feature('access_to_analytics')
+        """
+        plan = self.current_plan()
+        if not plan:
+            return False
+
+        return getattr(plan, feature_name, False)
+
+    def is_plan(self, plan_name: str) -> bool:
+        """
+        Returns True if the hotel currently has the specified plan.
+        Example: hotel.is_plan('BASIC')
+        """
+        plan = self.current_plan()
+        return plan and plan.name.upper() == plan_name.upper()
+
     def __str__(self):
         return self.hotel_name
+
+
+
+
+class SubscriptionPlan(models.Model):
+    """
+    Defines the different subscription plans available.
+    """
+    PLAN_CHOICES = [
+        ('FREE', 'Free'),
+        ('BASIC', 'Basic'),
+        ('ENTERPRISE', 'Enterprise'),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=50, choices=PLAN_CHOICES, unique=True)
+    price = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
+    duration_days = models.PositiveIntegerField(default=30)  # plan validity
+    description = models.TextField(blank=True, null=True)
+
+    # feature controls (you can add more later)
+    max_rooms = models.PositiveIntegerField(default=5)
+    allow_logo_upload = models.BooleanField(default=False)
+    access_to_analytics = models.BooleanField(default=False)
+    priority_support = models.BooleanField(default=False)
+    promotional_visibility = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.get_name_display()} Plan"
+
+
+class HotelSubscription(models.Model):
+    """
+    Links a Hotel to its active subscription plan.
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name='subscriptions')
+    plan = models.ForeignKey(SubscriptionPlan, on_delete=models.CASCADE)
+    start_date = models.DateTimeField(default=now)
+    end_date = models.DateTimeField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    auto_renew = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-start_date']
+
+    def __str__(self):
+        return f"{self.hotel.hotel_name} - {self.plan.name} ({'Active' if self.is_active else 'Expired'})"
+
+    def is_expired(self):
+        """
+        Checks if the subscription has expired.
+        """
+        return self.end_date and self.end_date < now()
+
+    def remaining_days(self):
+        """
+        Returns number of days left before expiration.
+        """
+        if not self.end_date:
+            return None
+        delta = self.end_date - now()
+        return max(delta.days, 0)

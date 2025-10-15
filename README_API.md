@@ -100,3 +100,32 @@ body (JSON)
 HEADER: 
 Content-type - application/json
 Authorization - Bearer <session token>
+
+
+## Example to ENFORCE SUBSCRIPTION IN TEMPLATE
+{% if request.user.hotel_profile.has_feature('allow_logo_upload') %}
+    <button>Upload Logo</button>
+{% else %}
+    <p>Upgrade your plan to upload logo</p>
+{% endif %}
+
+
+## LOGO AUTHENTICATION FOR SUBSCRIPTION REACT
+
+const uploadLogo = async (file) => {
+  const formData = new FormData();
+  formData.append("logo", file);
+
+  const res = await fetch("http://localhost:8000/api/upload-logo/", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${yourTokenHere}`,
+    },
+    body: formData,
+  });
+
+  const data = await res.json();
+  console.log(data);
+};
+### PLANS FOR SUBSEQUENT VERSIONS
+Incoporate AI to help handle analytics

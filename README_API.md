@@ -35,6 +35,8 @@ http://localhost:8000/api/auth/password-reset-confirm/MTQ/cs2824-ae93c8cc7ee1ca4
 This is the link the user will get in their email in order to reset their password.  The user needs this to change their password after the email message.
  ==> REMEMBER THAT THE LOCALHOST IS LISTENING ON 3000- REACT FRONTEND SERVER.
 
+ Link in email message should look like this http://localhost:5173/reset-password/MTQ/cxq96e-c3a5724a72bbd4e4a491049fc60dd118
+
 ## API RESTPOINT FOR PASSWORD CREATION
 http://localhost:8000/api/auth/set-new-password/
 
@@ -88,6 +90,8 @@ body (JSON)
 }
 HEADER:
 ontent-type - application/json
+
+Link in email message should look like this http://localhost:5173/reset-password/MTQ/cxq96e-c3a5724a72bbd4e4a491049fc60dd118/?type=reset
 
 ## RESET PASSWORD FOR AUTHENITICATED USER
 API: http://localhost:8000/api/auth/request-password-change-authenticated-user/

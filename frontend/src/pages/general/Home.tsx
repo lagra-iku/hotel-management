@@ -1,4 +1,4 @@
-import Header from '../components/Header';
+import Header from '../../components/Header';
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';

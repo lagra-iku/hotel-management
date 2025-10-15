@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 
-export default function CountrySelect() {
+interface CountrySelectProps {
+  value: string;
+  onChange: (value: string) => void;
+}
+
+export default function CountrySelect({ value, onChange }: CountrySelectProps) {
   const [countries, setCountries] = useState<{ code: string; name: string }[]>([]);
-  const [selectedCountry, setSelectedCountry] = useState("");
 
   useEffect(() => {
     fetch("https://api.first.org/data/v1/countries")
       .then((res) => res.json())
       .then((data) => {
-        // Convert the object to an array for easy mapping
         const formatted = Object.entries(data.data).map(([code, info]: any) => ({
           code,
           name: info.country,
@@ -20,27 +23,24 @@ export default function CountrySelect() {
 
   return (
     <div className="space-y-2">
-      <label htmlFor="country" className="block font-semibold text-gray-700">
-        Select Country
-      </label>
 
       <select
         id="country"
-        className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-tealGreen bg-ivory"
-        value={selectedCountry}
-        onChange={(e) => setSelectedCountry(e.target.value)}
+        className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-tealGreen bg-white"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
       >
         <option value="">-- Choose Country --</option>
         {countries.map((c) => (
-          <option key={c.code} value={c.code}>
+          <option key={c.code} value={c.name}>
             {c.name}
           </option>
         ))}
       </select>
 
-      {selectedCountry && (
+      {value && (
         <p className="text-gray-600 text-sm">
-          You selected: <span className="font-medium">{selectedCountry}</span>
+          You selected: <span className="font-medium">{value}</span>
         </p>
       )}
     </div>

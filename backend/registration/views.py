@@ -15,6 +15,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from .subscription_utils import subscription_required
+from .models import Hotel
+from .serializers import HotelLogoSerializer
 
 def index(request):
     return HttpResponse("Hello from the registration app!")
@@ -211,10 +218,10 @@ class AuthenticatedUserRequestPasswordChange(generics.GenericAPIView):
 
 
 
-
-
-
 class RequestPasswordResetUnauthenticatedUser(generics.GenericAPIView):
+    """
+    API View to request password reset for unauthenticated users.
+    """
     permission_classes = [AllowAny]
     serializer_class = UnauthenticatedUserResetPasswordSerializer
 
@@ -242,35 +249,18 @@ class RequestPasswordResetUnauthenticatedUser(generics.GenericAPIView):
 
 
 
-"""
-class SetNewPasswordAPIView(generics.GenericAPIView):
-    permission_classes = [AllowAny]
-    serializer_class = SetNewPasswordSerializer
+# 
+class UploadLogoAPIView(APIView):
+    """ API view to upload or update hotel logo.
+    """
+    permission_classes = [IsAuthenticated]
 
-    def post(self, request):
-        serializer = self.get_serializer(data=request.data)
+    @subscription_required(feature='allow_logo_upload')  # decorator works with DRF too
+    def post(self, request, *args, **kwargs):
+        hotel = request.user.hotel_profile
+        serializer = HotelLogoSerializer(hotel, data=request.data, partial=True)
         if serializer.is_valid():
-            try:
-                uid = force_str(urlsafe_base64_decode(serializer.validated_data['uid']))
-                user = CustomUser.objects.get(pk=uid)
-            except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
-                return Response(
-                    {'detail': 'Invalid user.'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-            if default_token_generator.check_token(user, serializer.validated_data['token']):
-                user.set_password(serializer.validated_data['password'])
-                user.is_active = True  # Activate the user
-                user.save()
-                return Response(
-                    {'detail': 'Password has been reset successfully.'},
-                    status=status.HTTP_200_OK
-                )
-            return Response(
-                {'detail': 'Invalid token.'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            serializer.save()
+            return Response({"message": "Logo uploaded successfully!"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-"""
 

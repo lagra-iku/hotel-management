@@ -2,7 +2,8 @@ from .views import (
     index, admin,
     RegisterAPIView, PasswordResetConfirmAPIView, SetNewPasswordAPIView,
     HotelUpdateAPIView, HotelDeleteAPIView,
-    AuthenticatedUserRequestPasswordChange, RequestPasswordResetUnauthenticatedUser
+    AuthenticatedUserRequestPasswordChange, RequestPasswordResetUnauthenticatedUser,
+    UploadLogoAPIView,
 )
 
 from rest_framework_simplejwt.views import (
@@ -33,6 +34,9 @@ urlpatterns = [
     # Hotel management
     path('api/auth/hotel/update/', HotelUpdateAPIView.as_view(), name='hotel_update'),
     path('api/auth/hotel/delete/', HotelDeleteAPIView.as_view(), name='hotel_delete'),
+
+    # Subscription and logo upload
+    path('api/auth/upload-logo/', UploadLogoAPIView.as_view(), name='upload_logo'),
 ]
 
 

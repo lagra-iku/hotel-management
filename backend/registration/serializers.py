@@ -106,3 +106,9 @@ class UnauthenticatedUserResetPasswordSerializer(serializers.Serializer):
         self.user = user  # store user for later use in the view
         return value
 
+# registration/serializers.py
+
+class HotelLogoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Hotel
+        fields = ['logo']

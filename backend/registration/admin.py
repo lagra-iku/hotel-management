@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import CustomUser, Hotel
+from .models import CustomUser, Hotel, SubscriptionPlan, HotelSubscription
 from django.utils.translation import gettext_lazy as _
 
 @admin.register(Hotel)
@@ -72,6 +72,20 @@ class CustomUserAdmin(BaseUserAdmin):
         ),
     )
 
+@admin.register(SubscriptionPlan)
+class SubscriptionPlanAdmin(admin.ModelAdmin):
+    list_display = ("name", "price", "duration_days", "max_rooms", "allow_logo_upload", "access_to_analytics", "priority_support", "promotional_visibility")
+    search_fields = ("name",)
+    ordering = ("name",)
+
+
+@admin.register(HotelSubscription)
+class HotelSubscriptionAdmin(admin.ModelAdmin):
+    list_display = ("hotel", "plan", "start_date", "end_date", "is_active", "auto_renew")
+    search_fields = ("hotel__hotel_name", "plan__name")
+    ordering = ("-start_date",)
+
+# Customize the admin site titles
 admin.site.site_header = "Hotel Management Software Admin"
 admin.site.site_title = "Hotel Management Software Admin Portal"
 admin.site.index_title = "Welcome to Hotel Management Software Administration Panel"

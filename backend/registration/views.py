@@ -50,17 +50,17 @@ class RegisterAPIView(generics.GenericAPIView):
             token = default_token_generator.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             
-            #reset_url = f"{settings.FRONTEND_BASE_URL}/auth/set-new-password/{uid}/{token}/"
-            reset_url = f"{settings.FRONTEND_BASE_URL}/api/auth/password-reset-confirm/{uid}/{token}/"
+            #reset URL that communicates with frontend
+            reset_url = f"{settings.FRONTEND_BASE_URL}/reset-password/{uid}/{token}/"
             
 
             print(f"Generated UID: {uid}, Token: {token}")  # In registration
             # Send email
             send_mail(
-                'Set your password for your new account',
-                f'Please use the following link to reset your password: {reset_url}',
-                settings.DEFAULT_FROM_EMAIL,
-                [user.email],
+                subject='SET YOUR PASSWORD',
+                message=f'Please use the following link to reset your password. Ignore if you did not request this: {reset_url}',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
                 fail_silently=False,
             )
 
@@ -203,12 +203,12 @@ class AuthenticatedUserRequestPasswordChange(generics.GenericAPIView):
         reset_url = f"{settings.FRONTEND_BASE_URL}/api/auth/password-reset-confirm/{uid}/{token}/"
 
         send_mail(
-            'Set your new password',
-            f'You have requested a password reset. Use the following link to reset your password: {reset_url}. Kindly ignore this email if you did not make this request.',
-            settings.DEFAULT_FROM_EMAIL,
-            [user.email],
-            fail_silently=False,
-        )
+                subject='SET YOUR NEW PASSWORD',
+                message=f'Please use the following link to reset your password. Ignore if you did not request this: {reset_url}',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                fail_silently=False,
+            )
 
         return Response(
             {'detail': 'Please check your email to set your password.'},
@@ -232,15 +232,19 @@ class RequestPasswordResetUnauthenticatedUser(generics.GenericAPIView):
         user = serializer.user
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
-        reset_url = f"{settings.FRONTEND_BASE_URL}/api/auth/password-reset-confirm/{uid}/{token}/"
+        reset_url = f"{settings.FRONTEND_BASE_URL}/reset-password/{uid}/{token}/?type=reset"
 
         send_mail(
-            'Set your new password',
-            f'You have requested a password reset. Use the following link to reset your password: {reset_url}. Kindly ignore this email if you did not make this request.',
-            settings.DEFAULT_FROM_EMAIL,
-            [user.email],
+            subject='SET YOUR NEW PASSWORD',
+            message=f'You have requested to change your password on HotelHub. Please use the following link to reset your password. Ignore if you did not request this: {reset_url}',
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
             fail_silently=False,
         )
+
+
+
+
         return Response(
             {'detail': 'Please check your email to reset your password.'},
             status=status.HTTP_200_OK

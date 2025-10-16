@@ -121,20 +121,20 @@ STATIC_URL = '/static/'
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # Email settings
 #EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Or 'console.EmailBackend' for development
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-#EMAIL_HOST = 'smtp.gmail.com'
-#EMAIL_PORT = 587
-#EMAIL_USE_TLS = True
-#EMAIL_HOST_USER = 'altairraphael19@gmail.com'
-#EMAIL_HOST_PASSWORD = 'rmxjyerckzjuyrot'
-#DEFAULT_FROM_EMAIL = 'Hotel Management <altairraphael19@gmail.com>'
-DEFAULT_FROM_EMAIL = 'noreply@<altairraphael19@gmail.com>'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'        # or another provider
+EMAIL_PORT = 587                     # 465 if using SSL
+EMAIL_USE_TLS = True                 # True for Gmail
+EMAIL_HOST_USER = 'altairraphael19@gmail.com'
+EMAIL_HOST_PASSWORD = 'rmxjyerckzjuyrot'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 
 # Frontend URL for password reset
-FRONTEND_BASE_URL = 'http://localhost:3000'  #React app URL
+FRONTEND_BASE_URL = 'http://localhost:5173'  #React app URL
 
 # Generate shorter-lived tokens (1 hour instead of default 3 days)
 
